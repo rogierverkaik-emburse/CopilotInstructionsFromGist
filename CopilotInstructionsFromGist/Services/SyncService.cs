@@ -5,10 +5,22 @@ using System.Threading.Tasks;
 
 internal class SyncService
 {
-    public async Task<string> SyncAsync(string solutionDir, string gistUrl)
+    internal enum SyncResultType
+    {
+        Created,
+        Updated,
+        Unchanged
+    }
+
+    internal class SyncResult
+    {
+        public SyncResultType ResultType { get; set; }
+        public string Message { get; set; }
+    }
+
+    public async Task<SyncResult> SyncAsync(string solutionDir, string gistUrl)
     {
         var gistId = ExtractGistId(gistUrl);
-
         var content = await DownloadGistAsync(gistId);
 
         var githubDir = Path.Combine(solutionDir, ".github");
@@ -19,17 +31,33 @@ internal class SyncService
         if (!File.Exists(filePath))
         {
             File.WriteAllText(filePath, content);
-            return "Copilot instructions created from Gist.";
+            return new SyncResult
+            {
+                ResultType = SyncResultType.Created,
+                Message = "Copilot instructions created from Gist."
+            };
         }
 
         var existingContent = File.ReadAllText(filePath);
 
         if (existingContent == content)
-            return "Copilot instructions already up to date.";
+        {
+            return new SyncResult
+            {
+                ResultType = SyncResultType.Unchanged,
+                Message = "Copilot instructions already up to date."
+            };
+        }
 
         File.WriteAllText(filePath, content);
-        return "Copilot instructions updated from Gist.";
+
+        return new SyncResult
+        {
+            ResultType = SyncResultType.Updated,
+            Message = "Copilot instructions updated from Gist."
+        };
     }
+
 
     private async Task<string> DownloadGistAsync(string gistId)
     {
