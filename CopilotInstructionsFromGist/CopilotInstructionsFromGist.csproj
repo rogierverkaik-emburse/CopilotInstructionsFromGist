@@ -51,6 +51,7 @@
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="CopilotInstructionsFromGistPackage.cs" />
+    <Compile Include="Services\SyncService.cs" />
     <Compile Include="SyncCommand.cs" />
   </ItemGroup>
   <ItemGroup>

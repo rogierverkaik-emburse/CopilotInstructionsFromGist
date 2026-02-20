@@ -101,21 +101,13 @@ namespace CopilotInstructionsFromGist
             // STEP 2: Switch to background thread
             await TaskScheduler.Default;
 
-            var content = await Task.Run(async () =>
-            {
-                return await DownloadGistAsync(gistId);
-            });
+            var syncService = new SyncService();
+            var resultMessage = await syncService.SyncAsync(solutionDir, gistUrl);
 
-            var githubDir = Path.Combine(solutionDir, ".github");
-            Directory.CreateDirectory(githubDir);
-
-            var filePath = Path.Combine(githubDir, "copilot-instructions.md");
-            File.WriteAllText(filePath, content);
-
-            // STEP 3: Back to UI thread for notification
             await ThreadHelper.JoinableTaskFactory.SwitchToMainThreadAsync();
 
-            ShowMessage("Copilot instructions updated from Gist.");
+            ShowMessage(resultMessage);
+
         }
 
 

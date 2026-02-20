@@ -4,7 +4,7 @@
     <Platform Name="arm64" />
     <Platform Name="x86" />
   </Configurations>
-  <Project Path="CopilotInstructionsFromGist/CopilotInstructionsFromGist.csproj">
+  <Project Path="CopilotInstructionsFromGist/CopilotInstructionsFromGist.csproj" Id="5cbee647-42a4-4a7a-aee4-8a6de1357198">
     <Platform Solution="*|arm64" Project="arm64" />
     <Platform Solution="*|x86" Project="x86" />
   </Project>
