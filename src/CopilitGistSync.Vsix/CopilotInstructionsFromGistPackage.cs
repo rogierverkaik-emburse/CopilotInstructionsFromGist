@@ -1,4 +1,5 @@
-﻿using Microsoft.VisualStudio.Shell;
+﻿using CopilotGistSync.Core;
+using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Threading;
 using System;
@@ -6,10 +7,8 @@ using System.IO;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
-using static SyncService;
-using Task = System.Threading.Tasks.Task;
 
-namespace CopilotInstructionsFromGist;
+namespace CopilotGistSync.Vsix;
 
 [PackageRegistration(UseManagedResourcesOnly = true, AllowsBackgroundLoading = true)]
 [ProvideAutoLoad(UIContextGuids80.SolutionExists, PackageAutoLoadFlags.BackgroundLoad)]
@@ -20,6 +19,7 @@ public sealed class CopilotInstructionsFromGistPackage : AsyncPackage
 {
     public const string PackageGuidString = "43f82a5f-e06b-4869-bee9-d5407b126afa";
     private EnvDTE.SolutionEvents _solutionEvents;
+    private ISyncService _syncService;
 
     protected override async Task InitializeAsync(
         CancellationToken cancellationToken,
@@ -27,7 +27,11 @@ public sealed class CopilotInstructionsFromGistPackage : AsyncPackage
     {
         await JoinableTaskFactory.SwitchToMainThreadAsync(cancellationToken);
 
-        await SyncCommand.InitializeAsync(this);
+        var gistClient = new DefaultGistClient();
+        var fileSystem = new PhysicalFileSystem();
+        _syncService = new SyncService(gistClient, fileSystem);
+
+        await SyncCommand.InitializeAsync(this, _syncService);
 
         if (await GetServiceAsync(typeof(EnvDTE.DTE)) is EnvDTE.DTE dte)
         {
@@ -67,8 +71,7 @@ public sealed class CopilotInstructionsFromGistPackage : AsyncPackage
 
         try
         {
-            var syncService = new SyncService();
-            var result = await syncService.SyncAsync(solutionDir, options.GistUrl);
+            var result = await _syncService.SyncAsync(solutionDir, options.GistUrl);
 
             await JoinableTaskFactory.SwitchToMainThreadAsync();
 

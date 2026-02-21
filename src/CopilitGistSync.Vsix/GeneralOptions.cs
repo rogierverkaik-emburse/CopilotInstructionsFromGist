@@ -1,6 +1,8 @@
 ﻿using Microsoft.VisualStudio.Shell;
 using System.ComponentModel;
 
+namespace CopilotGistSync.Vsix;
+
 public class GeneralOptions : DialogPage
 {
     private string gistUrl = "";

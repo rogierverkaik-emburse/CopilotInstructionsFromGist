@@ -1,0 +1,7 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/CopilitGistSync.Vsix/CopilotGistSync.Vsix.csproj" Id="5cbee647-42a4-4a7a-aee4-8a6de1357198" />
+    <Project Path="src/CopilotGistSync.Core/CopilotGistSync.Core.csproj" />
+  </Folder>
+  <Folder Name="/tests/" />
+</Solution>
